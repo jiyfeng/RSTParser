@@ -1,7 +1,7 @@
 ## parser.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/03/2014 17:50:19>
+## Time-stamp: <yangfeng 09/09/2014 18:02:04>
 
 """ Shift-reduce parser
 """
@@ -22,10 +22,19 @@ class SRParser(object):
         :type texts: list of string
         :param texts: a sequence of EDUs for parsing
         """
-        pass
+        for (idx, text) in enumerate(texts):
+            node = SpanNode(text=text)
+            node.edulist, node.nucspan = [idx], [idx]
+            node.nucedu = idx
+            self.Queue.append(node)
 
 
     def parselabel(self, label):
+        """ Analyze parsing action
+
+        :type label: string
+        :param label: parsing action concatenated by '-'
+        """
         items = label.split('-')
         if len(items) == 1:
             return (label, None, None)
@@ -72,5 +81,11 @@ class SRParser(object):
                 node.nucedu = rnode.nucedu
             else:
                 raise ValueError("Unrecognized form: {}".format(form))
+
+
+    def getstatus(self):
+        """ Return the status of the Queue/Stack
+        """
+        return (self.Stack, self.Queue)
 
             

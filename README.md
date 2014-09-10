@@ -6,9 +6,19 @@ RST parser trained on RST discourse treebank.
 
 ## Code Structure ##
 
+- tree.py: RST Tree, including:
+    - Read string to build a RST tree
+    - Binarization of a general RST tree
+    - Write an RST tree into string
 - parser.py: shift-reduce parsing algorithm
-- feature.py: feature generation module. Generating feature from (1) current EDU; (2) current span; (3) document structure; (4) current queue/stack status
-- datastructure.py: data structure used in this project
+    - Change the status of stack/queue according specific parsing action
+- feature.py: feature generation module. Generating feature from 
+    - current EDUs; 
+    - current span; 
+    - document structure; 
+    - current queue/stack status;
+- datastructure.py: data structure used in this project, including:
+    - SpanNode: node structure of an RST tree
 - model.py: including all parameters for parser and feature generation process
 - learn.py: learning framework for shift-reduce parsing
 
