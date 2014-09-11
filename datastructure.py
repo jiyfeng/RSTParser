@@ -1,7 +1,7 @@
 ## datastructure.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2013
-## Time-stamp: <yangfeng 09/10/2014 14:16:14>
+## Time-stamp: <yangfeng 09/11/2014 16:46:21>
 
 class SpanNode(object):
     """ RST tree node
@@ -19,11 +19,13 @@ class SpanNode(object):
         # Nucleus single EDU
         self.nucedu = None
         # Property
-        self.property = prop
+        self.prop = prop
         # Children node
         # Each of them is a node instance
         # N-S form (for binary RST tree only)
         self.lnode, self.rnode = None, None
+        # Parent node
+        self.pnode = None
         # Node list (for general RST tree only)
         self.nodelist = []
         # Relation form: NN, NS, SN

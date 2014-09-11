@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/10/2014 14:38:44>
+## Time-stamp: <yangfeng 09/11/2014 16:46:39>
 
 from datastructure import *
 
@@ -34,9 +34,30 @@ def createtext(lst):
 
 
 def BFT(tree):
-    """ Breadth-first treavsal on tree
+    """ Breadth-first treavsal on general RST tree
     """
-    pass
+    queue = [tree]
+    bft_nodelist = []
+    while queue:
+        node = queue.pop(0)
+        bft_nodelist.append(node)
+        queue += node.nodelist
+    return bft_nodelist
+
+
+def BFTbin(tree):
+    """ Breadth-first treavsal on binary RST tree
+    """
+    queue = [tree]
+    bft_nodelist = []
+    while queue:
+        node = queue.pop(0)
+        bft_nodelist.append(node)
+        if node.lnode is not None:
+            queue.append(node.lnode)
+        if node.rnode is not None:
+            queue.append(node.rnode)
+    return bft_nodelist
 
 
 def processtext(tokens):
@@ -67,10 +88,11 @@ def createnode(node, content):
     :param content: content from stack
     """
     for c in content:
-        print 'type(c) = {}'.format(type(c))
+        # print 'type(c) = {}'.format(type(c))
         if isinstance(c, SpanNode):
             # Sub-node
             node.nodelist.append(c)
+            c.pnode = node
         elif c[0] == 'span':
             node.eduspan = (c[1], c[2])
         elif c[0] == 'relation':
@@ -87,9 +109,11 @@ def createnode(node, content):
 
 
 def buildtree(text):
+    """ Build tree from *.dis file
+    """
     tokens = text.strip().replace('\n','').replace('(', ' ( ').replace(')', ' ) ').split()
     queue = processtext(tokens)
-    print 'queue = {}'.format(queue)
+    # print 'queue = {}'.format(queue)
     stack = []
     while queue:
         token = queue.pop(0)
@@ -145,11 +169,120 @@ def buildtree(text):
             stack.append(token)
     return stack[-1]
         
-    
+
+def binarizetree(tree):
+    """ Convert a general RST tree to a binary RST tree
+
+    :type tree: instance of SpanNode
+    :param tree: a general RST tree
+    """
+    queue = [tree]
+    while queue:
+        node = queue.pop(0)
+        queue += node.nodelist
+        # Construct binary tree
+        if len(node.nodelist) == 2:
+            node.lnode = node.nodelist[0]
+            node.rnode = node.nodelist[1]
+            # Parent node
+            node.lnode.pnode = node
+            node.rnode.pnode = node
+        elif len(node.nodelist) > 2:
+            # Remove one node from the nodelist
+            node.lnode = node.nodelist.pop(0)
+            newnode = SpanNode(node.nodelist[0].prop)
+            newnode.nodelist += node.nodelist
+            # Right-branching
+            node.rnode = newnode
+            # Parent node
+            node.lnode.pnode = node
+            node.rnode.pnode = node
+            # Add to the head of the queue
+            # So the code will keep branching
+            # until the nodelist size is 2
+            queue.insert(0, node)
+        # Clear nodelist for the current node
+        node.nodelist = []
+    return tree
+
+
+def backprop(tree):
+    """ Starting from leaf node, propagating node
+        information back to root node
+    """
+    treenodes = BFTbin(tree)
+    treenodes.reverse()
+    for node in treenodes:
+        if (node.lnode is not None) and (node.rnode is not None):
+            # Non-leaf node
+            node.eduspan = __getspaninfo(node.lnode, node.rnode)
+            node.text = __gettextinfo(node.lnode, node.rnode)
+            if node.relation is None:
+                # If it is a new node
+                node.relation = __getrelationinfo(node.lnode, node.rnode)
+            node.form, node.nucspan = __getforminfo(node.lnode, node.rnode)
+        elif (node.lnode is None) and (node.rnode is not None):
+            # Illegal node
+            pass
+        elif (node.lnode is not None) and (node.rnode is None):
+            # Illegal node
+            pass
+        else:
+            # Leaf node
+            pass
+    return treenodes[-1]
+
+
+def __getspaninfo(lnode, rnode):
+    """ Get span size for parent node
+    """
+    eduspan = (lnode.eduspan[0], rnode.eduspan[1])
+    return eduspan
+
+
+def __getforminfo(lnode, rnode):
+    """ Get Nucleus/Satellite form and Nucleus span
+    """
+    if (lnode.prop=='Nucleus') and (rnode.prop=='Satellite'):
+        nucspan = lnode.eduspan
+        form = 'NS'
+    elif (lnode.prop=='Satellite') and (rnode.prop=='Nucleus'):
+        nucspan = rnode.eduspan
+        form = 'SN'
+    elif (lnode.prop=='Nucleus') and (rnode.prop=='Nucleus'):
+        nucspan = (lnode.eduspan[0], rnode.eduspan[1])
+        form = 'NN'
+    else:
+        raise ValueError("")
+    return (form, nucspan)
+
+
+def __getrelationinfo(lnode, rnode):
+    """ Get relation information
+    """
+    if (lnode.prop=='Nucleus') and (rnode.prop=='Nucleus'):
+        relation = lnode.relation
+    else:
+        print 'lnode.prop = {}'.format(lnode.prop)
+        print 'rnode.prop = {}'.format(rnode.prop)
+        raise ValueError("Error when find relation for new node")
+    return relation
+
+
+def __gettextinfo(lnode, rnode):
+    """ Get text span for parent node
+    """
+    text = lnode.text + " " + rnode.text
+    return text
+        
+
 def test():
     fname = "examples/wsj_0603.out.dis"
     text = open(fname, 'r').read()
     T = buildtree(text)
+    T = binarizetree(T)
+    T = backprop(T)
+    print T.text
 
 
 if __name__ == '__main__':
