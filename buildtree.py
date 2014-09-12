@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/11/2014 16:46:39>
+## Time-stamp: <yangfeng 09/12/2014 16:45:36>
 
 from datastructure import *
 
@@ -35,6 +35,9 @@ def createtext(lst):
 
 def BFT(tree):
     """ Breadth-first treavsal on general RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an general RST tree
     """
     queue = [tree]
     bft_nodelist = []
@@ -47,6 +50,9 @@ def BFT(tree):
 
 def BFTbin(tree):
     """ Breadth-first treavsal on binary RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
     """
     queue = [tree]
     bft_nodelist = []
@@ -110,6 +116,9 @@ def createnode(node, content):
 
 def buildtree(text):
     """ Build tree from *.dis file
+
+    :type text: string
+    :param text: RST tree read from a *.dis file
     """
     tokens = text.strip().replace('\n','').replace('(', ' ( ').replace(')', ' ) ').split()
     queue = processtext(tokens)
@@ -209,6 +218,9 @@ def binarizetree(tree):
 def backprop(tree):
     """ Starting from leaf node, propagating node
         information back to root node
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
     """
     treenodes = BFTbin(tree)
     treenodes.reverse()
@@ -235,6 +247,9 @@ def backprop(tree):
 
 def __getspaninfo(lnode, rnode):
     """ Get span size for parent node
+
+    :type lnode,rnode: SpanNode instance
+    :param lnode,rnode: Left/Right children nodes
     """
     eduspan = (lnode.eduspan[0], rnode.eduspan[1])
     return eduspan
@@ -242,6 +257,9 @@ def __getspaninfo(lnode, rnode):
 
 def __getforminfo(lnode, rnode):
     """ Get Nucleus/Satellite form and Nucleus span
+
+    :type lnode,rnode: SpanNode instance
+    :param lnode,rnode: Left/Right children nodes
     """
     if (lnode.prop=='Nucleus') and (rnode.prop=='Satellite'):
         nucspan = lnode.eduspan
@@ -259,6 +277,9 @@ def __getforminfo(lnode, rnode):
 
 def __getrelationinfo(lnode, rnode):
     """ Get relation information
+
+    :type lnode,rnode: SpanNode instance
+    :param lnode,rnode: Left/Right children nodes
     """
     if (lnode.prop=='Nucleus') and (rnode.prop=='Nucleus'):
         relation = lnode.relation
@@ -271,18 +292,77 @@ def __getrelationinfo(lnode, rnode):
 
 def __gettextinfo(lnode, rnode):
     """ Get text span for parent node
+
+    :type lnode,rnode: SpanNode instance
+    :param lnode,rnode: Left/Right children nodes
     """
     text = lnode.text + " " + rnode.text
     return text
-        
 
+
+def postorder_DFT(tree, nodelist=[]):
+    """ Post order traversal on binary RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
+
+    :type nodelist: list
+    :param nodelist: list of node in post order
+    """
+    if tree.lnode is not None:
+        postorder_DFT(tree.lnode, nodelist)
+    if tree.rnode is not None:
+        postorder_DFT(tree.rnode, nodelist)
+    nodelist.append(tree)
+    return nodelist
+
+
+def decodeSRaction(tree):
+    """ Decoding Shift-reduce actions from an binary RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
+    """
+    # Sub-function, which only used here
+    def __extractrelation(s):
+        # Uncomment the following code for coarse discourse relation
+        # return s.lower().split('-')[0]
+        return s
+    # Start decoding
+    post_nodelist = postorder_DFT(tree, [])
+    # print len(post_nodelist)
+    actionlist = []
+    for node in post_nodelist:
+        if (node.lnode is None) and (node.rnode is None):
+            actionlist.append(('Shift', None, None))
+        elif (node.lnode is not None) and (node.rnode is not None):
+            form = node.form
+            if (form == 'NN') or (form == 'NS'):
+                relation = __extractrelation(node.rnode.relation)
+            else:
+                relation = __extractrelation(node.lnode.relation)
+            actionlist.append(('Reduce', form, relation))
+        else:
+            raise ValueError("Can not decode Shift-Reduce action")
+    return actionlist
+        
+        
+## ========================================================
 def test():
     fname = "examples/wsj_0603.out.dis"
     text = open(fname, 'r').read()
+    # Build RST tree
     T = buildtree(text)
+    # Binarize the RST tree
     T = binarizetree(T)
+    # Back-propagating information from
+    #   leaf node to root node
     T = backprop(T)
-    print T.text
+    # Decoding shift-reduce actions from
+    #   the binary RST tree
+    actionlist = decodeSRaction(T)
+    for action in actionlist:
+        print action
 
 
 if __name__ == '__main__':
