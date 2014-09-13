@@ -1,7 +1,7 @@
 ## feature.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/09/2014 17:47:24>
+## Time-stamp: <yangfeng 09/13/2014 17:33:03>
 
 
 class FeatureGenerator(object):
@@ -14,13 +14,14 @@ class FeatureGenerator(object):
         :type queue: list
         :param queue: list of Node instance
         """
-        pass
+        self.stack = stack
+        self.queue = queue
 
 
     def features(self):
         """ Main function to generate features
         """
-        pass
+        return []
 
 
     def lexical_features(self, n):

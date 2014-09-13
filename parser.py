@@ -1,7 +1,7 @@
 ## parser.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/09/2014 18:02:04>
+## Time-stamp: <yangfeng 09/13/2014 17:24:39>
 
 """ Shift-reduce parser
 """
@@ -9,11 +9,11 @@
 from datastructure import *
 
 class SRParser(object):
-    def __init__(self):
+    def __init__(self, stack=[], queue=[]):
         """ Initialization
         """
-        self.Stack = []
-        self.Queue = []
+        self.Stack = stack
+        self.Queue = queue
 
 
     def init(self, texts):
@@ -44,17 +44,17 @@ class SRParser(object):
             raise ValueError("Unrecognized parsing label")
             
 
-    def operate(self, label):
+    def operate(self, action_tuple):
         """ According to parsing label to modify the status of
             the Stack/Queue
 
         Need a special exception for parsing error -YJ
 
-        :type label: string
-        :param label: one specific parsing action, for example
-                      reduce-NS-elaboration
+        :type action_tuple: tuple (,,)
+        :param action_tuple: one specific parsing action,
+                             for example: reduce-NS-elaboration
         """
-        action, form, relation = self.parselabel(label)
+        action, form, relation = action_tuple
         if action == 'shift':
             node = self.Queue.pop(0)
             self.Stack.append(node)

@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/12/2014 16:45:36>
+## Time-stamp: <yangfeng 09/13/2014 17:55:57>
 
 from datastructure import *
 
@@ -325,9 +325,9 @@ def decodeSRaction(tree):
     """
     # Sub-function, which only used here
     def __extractrelation(s):
-        # Uncomment the following code for coarse discourse relation
-        # return s.lower().split('-')[0]
-        return s
+        # Uncomment following code for coarse discourse relation
+        return s.lower().split('-')[0]
+        # return s
     # Start decoding
     post_nodelist = postorder_DFT(tree, [])
     # print len(post_nodelist)
@@ -345,6 +345,23 @@ def decodeSRaction(tree):
         else:
             raise ValueError("Can not decode Shift-Reduce action")
     return actionlist
+
+
+def getedunode(tree):
+    """ Get all left nodes. It can be used for generating training
+        examples from gold RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
+    """
+    # Post-order depth-first traversal
+    post_nodelist = postorder_DFT(tree, [])
+    # EDU list
+    edulist = []
+    for node in post_nodelist:
+        if (node.lnode is None) and (node.rnode is None):
+            edulist.append(node)
+    return edulist
         
         
 ## ========================================================
