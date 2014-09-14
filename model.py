@@ -1,20 +1,23 @@
 ## model.py
 ## Author: Yangfeng Ji
 ## Date: 09-09-2014
-## Time-stamp: <yangfeng 09/13/2014 17:50:57>
+## Time-stamp: <yangfeng 09/13/2014 23:48:09>
 
 """ As a parsing model, the main function is to determine
     the parsing action for a given set of features
 """
 
 from sklearn.svm import LinearSVC
+from cPickle import load, dump
+import gzip
 
 class ParsingModel(object):
-    def __init__(self, vocab=None):
+    def __init__(self, vocab=None, clf=None):
         """ Initialization
         """
         self.vocab = vocab
-        self.model = LinearSVC()
+        if clf is None:
+            self.clf = LinearSVC()
 
 
     def train(self, trnM, trnL):
@@ -32,7 +35,7 @@ class ParsingModel(object):
                          FeatureGenerator
         """
         vec = self.__vectorize(features)
-        label = self.model.predict(vec)
+        label = self.clf.predict(vec)
         return label
 
 
@@ -42,3 +45,24 @@ class ParsingModel(object):
         :param features:
         """
         return vectorize(features, self.vocab)
+
+
+    def savemodel(self, fname):
+        """ Save model and vocab
+        """
+        if not fname.endswith('.gz')
+            fname += '.gz'
+        D = {'clf':self.clf, 'vocab':self.vocab}
+        with gzip.open(fname, 'w') as fout:
+            dump(D, fout)
+        print 'Save model into {}'.format(fname)
+
+
+    def loadmodel(self, fname):
+        """ Load model
+        """
+        with gzip.open(fname, 'r') as fin:
+            D = load(fin)
+        self.clf = D['clf']
+        self.vocab = D['vocab']
+        print 'Load model from {}'.format(fname)
