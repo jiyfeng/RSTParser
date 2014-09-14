@@ -1,7 +1,7 @@
 ## util.py
 ## Author: Yangfeng Ji
 ## Date: 09-13-2014
-## Time-stamp: <yangfeng 09/13/2014 23:02:58>
+## Time-stamp: <yangfeng 09/14/2014 13:51:22>
 
 from scipy.sparse import lil_matrix
 
@@ -40,3 +40,9 @@ def vectorize(features, vocab):
         except KeyError:
             pass
     return vec
+
+
+def extractrelation(s, level=0):
+    """ Extract discourse relation on different level
+    """
+    return s.lower().split('-')[0]

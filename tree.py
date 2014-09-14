@@ -1,7 +1,7 @@
 ## tree.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/13/2014 17:34:28>
+## Time-stamp: <yangfeng 09/14/2014 13:46:49>
 
 """ Any operation about an RST tree should be here
 """
@@ -10,6 +10,7 @@ from datastructure import *
 from buildtree import *
 from feature import FeatureGenerator
 from parser import SRParser
+from util import extractrelation
 
 
 class RSTTree(object):
@@ -42,6 +43,19 @@ class RSTTree(object):
         pass
 
 
+    def bracketing(self):
+        """ Generate brackets according an Binary RST tree
+        """
+        nodelist = postorder_DFT(self.tree)
+        nodelist.pop() # Remove the root node
+        brackets = []
+        for node in nodelist:
+            relation = extractrelation(node.relation)
+            b = (node.eduspan, node.prop, relation)
+            brackets.append(b)
+        return brackets
+
+
     def generate_samples(self):
         """ Generate samples from an binary RST tree
         """
@@ -67,11 +81,12 @@ class RSTTree(object):
 
 def test():
     fname = "examples/wsj_0603.out.dis"
-    rst = RSTTree(fname, binary=True)
+    rst = RSTTree(fname)
     rst.build()
     actionlist, samplelist = rst.generate_samples()
     print actionlist
     print samplelist
+    print rst.bracketing()
 
 
 if __name__ == '__main__':

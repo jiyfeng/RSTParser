@@ -23,6 +23,7 @@ RST parser trained on RST discourse treebank.
     - SpanNode: node structure of an RST tree
 - model.py: including all parameters for parser and feature generation process
 - learn.py: learning framework for shift-reduce parsing
+- evaluation.py: including methods of evaluation
 
 
 ### Shift-reduce parsing ###

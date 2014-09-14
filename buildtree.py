@@ -1,37 +1,10 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/13/2014 17:55:57>
+## Time-stamp: <yangfeng 09/14/2014 13:49:05>
 
 from datastructure import *
-
-def checkcontent(label, c):
-    """ Check whether the content is legal
-
-    :type label: string
-    :param label: parsing label, such 'span', 'leaf'
-
-    :type c: list
-    :param c: list of tokens
-    """
-    if len(c) > 0:
-        raise ValueError("{} with content={}".format(label, c))
-
-
-def createtext(lst):
-    """ Create text from a list of tokens
-
-    :type lst: list
-    :param lst: list of tokens
-    """
-    newlst = []
-    for item in lst:
-        item = item.replace("_!","")
-        newlst.append(item)
-    text = ' '.join(newlst)
-    # Lower-casing
-    return text.lower()
-
+from util import extractrelation
 
 def BFT(tree):
     """ Breadth-first treavsal on general RST tree
@@ -64,6 +37,51 @@ def BFTbin(tree):
         if node.rnode is not None:
             queue.append(node.rnode)
     return bft_nodelist
+
+
+def postorder_DFT(tree, nodelist=[]):
+    """ Post order traversal on binary RST tree
+
+    :type tree: SpanNode instance
+    :param tree: an binary RST tree
+
+    :type nodelist: list
+    :param nodelist: list of node in post order
+    """
+    if tree.lnode is not None:
+        postorder_DFT(tree.lnode, nodelist)
+    if tree.rnode is not None:
+        postorder_DFT(tree.rnode, nodelist)
+    nodelist.append(tree)
+    return nodelist
+
+
+def checkcontent(label, c):
+    """ Check whether the content is legal
+
+    :type label: string
+    :param label: parsing label, such 'span', 'leaf'
+
+    :type c: list
+    :param c: list of tokens
+    """
+    if len(c) > 0:
+        raise ValueError("{} with content={}".format(label, c))
+
+
+def createtext(lst):
+    """ Create text from a list of tokens
+
+    :type lst: list
+    :param lst: list of tokens
+    """
+    newlst = []
+    for item in lst:
+        item = item.replace("_!","")
+        newlst.append(item)
+    text = ' '.join(newlst)
+    # Lower-casing
+    return text.lower()
 
 
 def processtext(tokens):
@@ -300,34 +318,12 @@ def __gettextinfo(lnode, rnode):
     return text
 
 
-def postorder_DFT(tree, nodelist=[]):
-    """ Post order traversal on binary RST tree
-
-    :type tree: SpanNode instance
-    :param tree: an binary RST tree
-
-    :type nodelist: list
-    :param nodelist: list of node in post order
-    """
-    if tree.lnode is not None:
-        postorder_DFT(tree.lnode, nodelist)
-    if tree.rnode is not None:
-        postorder_DFT(tree.rnode, nodelist)
-    nodelist.append(tree)
-    return nodelist
-
-
 def decodeSRaction(tree):
     """ Decoding Shift-reduce actions from an binary RST tree
 
     :type tree: SpanNode instance
     :param tree: an binary RST tree
     """
-    # Sub-function, which only used here
-    def __extractrelation(s):
-        # Uncomment following code for coarse discourse relation
-        return s.lower().split('-')[0]
-        # return s
     # Start decoding
     post_nodelist = postorder_DFT(tree, [])
     # print len(post_nodelist)
@@ -338,9 +334,9 @@ def decodeSRaction(tree):
         elif (node.lnode is not None) and (node.rnode is not None):
             form = node.form
             if (form == 'NN') or (form == 'NS'):
-                relation = __extractrelation(node.rnode.relation)
+                relation = extractrelation(node.rnode.relation)
             else:
-                relation = __extractrelation(node.lnode.relation)
+                relation = extractrelation(node.lnode.relation)
             actionlist.append(('Reduce', form, relation))
         else:
             raise ValueError("Can not decode Shift-Reduce action")
