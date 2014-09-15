@@ -1,7 +1,7 @@
 ## tree.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/14/2014 13:46:49>
+## Time-stamp: <yangfeng 09/14/2014 18:46:56>
 
 """ Any operation about an RST tree should be here
 """
@@ -80,7 +80,7 @@ class RSTTree(object):
         
 
 def test():
-    fname = "examples/wsj_0603.out.dis"
+    fname = "examples/wsj_0604.out.dis"
     rst = RSTTree(fname)
     rst.build()
     actionlist, samplelist = rst.generate_samples()

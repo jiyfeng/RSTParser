@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/14/2014 13:49:05>
+## Time-stamp: <yangfeng 09/14/2014 20:15:27>
 
 from datastructure import *
 from util import extractrelation
@@ -90,10 +90,12 @@ def processtext(tokens):
     :type tokens: list
     :param tokens: list of tokens
     """
+    identifier = '_!'
     within_text = False
     for (idx, tok) in enumerate(tokens):
-        if "_!" in tok:
-            within_text = not within_text
+        if identifier in tok:
+            for _ in range(tok.count(identifier)):
+                within_text = not within_text
         if ('(' in tok) and (within_text):
             tok = tok.replace('(','-LB-')
         if (')' in tok) and (within_text):
@@ -139,6 +141,7 @@ def buildtree(text):
     :param text: RST tree read from a *.dis file
     """
     tokens = text.strip().replace('\n','').replace('(', ' ( ').replace(')', ' ) ').split()
+    # print 'tokens = {}'.format(tokens)
     queue = processtext(tokens)
     # print 'queue = {}'.format(queue)
     stack = []
@@ -190,10 +193,14 @@ def buildtree(text):
                 txt = createtext(content)
                 stack.append(('text', txt))
             else:
-                raise ValueError("Unrecognized parsing label: {}".format(label))
+                raise ValueError("Unrecognized parsing label: {} \n\twith content = {}\n\tstack={}\n\tqueue={}".format(label, content, stack, queue))
         else:
             # else, keep push into the stack
             stack.append(token)
+    # print 'stack = ', stack
+    # print 'queue = ', queue
+    # print 'stack[-1] = ', stack[-1].prop, stack[-1].eduspan
+    # print 'stack[-2] = ', stack[-2].prop, stack[-2].eduspan
     return stack[-1]
         
 
@@ -227,7 +234,7 @@ def binarizetree(tree):
             # Add to the head of the queue
             # So the code will keep branching
             # until the nodelist size is 2
-            queue.insert(0, node)
+            queue.insert(0, newnode)
         # Clear nodelist for the current node
         node.nodelist = []
     return tree
@@ -249,7 +256,10 @@ def backprop(tree):
             node.text = __gettextinfo(node.lnode, node.rnode)
             if node.relation is None:
                 # If it is a new node
-                node.relation = __getrelationinfo(node.lnode, node.rnode)
+                if node.prop == 'Root':
+                    pass
+                else:
+                    node.relation = __getrelationinfo(node.lnode, node.rnode)
             node.form, node.nucspan = __getforminfo(node.lnode, node.rnode)
         elif (node.lnode is None) and (node.rnode is not None):
             # Illegal node
@@ -269,7 +279,11 @@ def __getspaninfo(lnode, rnode):
     :type lnode,rnode: SpanNode instance
     :param lnode,rnode: Left/Right children nodes
     """
-    eduspan = (lnode.eduspan[0], rnode.eduspan[1])
+    try:
+        eduspan = (lnode.eduspan[0], rnode.eduspan[1])
+    except TypeError:
+        print lnode.prop, rnode.prop
+        print lnode.nucspan, rnode.nucspan
     return eduspan
 
 
@@ -302,8 +316,8 @@ def __getrelationinfo(lnode, rnode):
     if (lnode.prop=='Nucleus') and (rnode.prop=='Nucleus'):
         relation = lnode.relation
     else:
-        print 'lnode.prop = {}'.format(lnode.prop)
-        print 'rnode.prop = {}'.format(rnode.prop)
+        print 'lnode.prop = {}, lnode.eduspan = {}'.format(lnode.prop, lnode.eduspan)
+        print 'rnode.prop = {}, lnode.eduspan = {}'.format(rnode.prop, rnode.eduspan)
         raise ValueError("Error when find relation for new node")
     return relation
 
@@ -362,10 +376,12 @@ def getedunode(tree):
         
 ## ========================================================
 def test():
-    fname = "examples/wsj_0603.out.dis"
+    fname = "examples/wsj_0604.out.dis"
     text = open(fname, 'r').read()
     # Build RST tree
     T = buildtree(text)
+    bft_nodelist = BFT(T)
+    print len(bft_nodelist)
     # Binarize the RST tree
     T = binarizetree(T)
     # Back-propagating information from
@@ -374,8 +390,8 @@ def test():
     # Decoding shift-reduce actions from
     #   the binary RST tree
     actionlist = decodeSRaction(T)
-    for action in actionlist:
-        print action
+    # for action in actionlist:
+    #     print action
 
 
 if __name__ == '__main__':
