@@ -1,7 +1,7 @@
 ## datastructure.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2013
-## Time-stamp: <yangfeng 09/11/2014 16:46:21>
+## Time-stamp: <yangfeng 09/16/2014 11:16:56>
 
 class SpanNode(object):
     """ RST tree node
@@ -31,3 +31,21 @@ class SpanNode(object):
         # Relation form: NN, NS, SN
         self.form = None
         
+
+class ParseError(Exception):
+    """ Exception for parsing
+    """
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+class ActionError(Exception):
+    """ Exception for illegal parsing action
+    """
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)

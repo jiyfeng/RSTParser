@@ -1,7 +1,7 @@
 ## data.py
 ## Author: Yangfeng Ji
 ## Date: 09-13-2014
-## Time-stamp: <yangfeng 09/13/2014 18:43:57>
+## Time-stamp: <yangfeng 09/16/2014 13:07:10>
 
 """ Construct data for training/dev/test data.
 Following three steps:
@@ -12,13 +12,15 @@ Following three steps:
 5, save/get vocabs (optional, necessary if new)
 """
 
-from collections import defaultdict
+from util import *
 from tree import RSTTree
+from collections import defaultdict
+from scipy.sparse import lil_matrix
 from cPickle import dump
 import os, numpy, gzip
 
 class Data(object):
-    def __init__(self, vocab=None, labelmap={}):
+    def __init__(self, vocab={}, labelmap={}):
         """ Initialization
 
         :type vocab: dict
@@ -53,8 +55,8 @@ class Data(object):
             data matrix
         """
         nSample, nFeat = len(self.samplelist), len(self.vocab)
-        self.M = ssp.lil_matrix((nSample, nFeat))
-        self.L = [-1]*nSample
+        self.M = lil_matrix((nSample, nFeat))
+        self.L = []
         for (sidx, sample) in enumerate(self.samplelist):
             label = action2label(self.actionlist[sidx])
             vec = vectorize(sample, self.vocab)
@@ -106,7 +108,13 @@ class Data(object):
     def getvocab(self):
         """ Get feature vocab and label mapping
         """
-        return (self.vocab, self.labelmap)
+        return self.vocab
+
+
+    def getrelamap(self):
+        """ Get relation map
+        """
+        return self.relamap
 
 
     def getmatrix(self):
@@ -123,7 +131,28 @@ class Data(object):
         """
         if not fname.endswith('.gz'):
             fname += '.gz'
-        D = {'vocab':self.vocab, 'labelmap':self.labelmap}
+        D = {'vocab':self.vocab, 'labelidxmap':self.labelmap}
         with gzip.open(fname, 'w') as fout:
             dump(D, fout)
         print 'Save vocab into file: {}'.format(fname)
+
+
+    def loadvocab(self, fname):
+        pass
+
+
+def test():
+    path = "./examples"
+    data = Data()
+    data.builddata(path)
+    data.buildvocab(thresh=3)
+    data.buildmatrix()
+    data.savematrix("tmp-data.pickle.gz")
+    data.savevocab("tmp-vocab.pickle.gz")
+    # print len(data.samplelist)
+    # print len(data.getvocab())
+
+
+if __name__ == '__main__':
+    test()
+    

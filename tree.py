@@ -1,9 +1,16 @@
 ## tree.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/14/2014 18:46:56>
+## Time-stamp: <yangfeng 09/16/2014 13:14:24>
 
 """ Any operation about an RST tree should be here
+1, Build general/binary RST tree from annotated file
+2, Binarize a general RST tree to the binary form
+3, Generate bracketing sequence for evaluation
+4, Write an RST tree into file (not implemented yet)
+5, Generate Shift-reduce parsing action examples
+6, Get all EDUs from the RST tree
+- YJ
 """
 
 from datastructure import *
@@ -66,7 +73,7 @@ class RSTTree(object):
         # Initialize queue and stack
         queue = getedunode(self.tree)
         stack = []
-        # Starting to simulate the shift-reduce parsing
+        # Start simulating the shift-reduce parsing
         for action in actionlist:
             # Generate features
             fg = FeatureGenerator(stack, queue)
@@ -75,18 +82,30 @@ class RSTTree(object):
             # Change status of stack/queue
             sr = SRParser(stack, queue)
             sr.operate(action)
-            stack, queue = sr.getstatus()
+            # stack, queue = sr.getstatus()
         return (actionlist, samplelist)
+
+
+    def getedutext(self):
+        """ Get all EDU text here
+        """
+        edunodelist = getedunode(self.tree)
+        texts = []
+        for node in edunodelist:
+            texts.append(node.text)
+        return texts
         
 
 def test():
-    fname = "examples/wsj_0604.out.dis"
+    fname = "examples/wsj_0600.out.dis"
     rst = RSTTree(fname)
     rst.build()
     actionlist, samplelist = rst.generate_samples()
-    print actionlist
-    print samplelist
-    print rst.bracketing()
+    # print actionlist
+    # print samplelist
+    for (action, sample) in zip(actionlist, samplelist):
+        print action, sample
+    # print rst.bracketing()
 
 
 if __name__ == '__main__':
