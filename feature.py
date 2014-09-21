@@ -1,7 +1,7 @@
 ## feature.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/16/2014 11:54:36>
+## Time-stamp: <yangfeng 09/21/2014 17:01:26>
 
 
 class FeatureGenerator(object):
@@ -48,16 +48,14 @@ class FeatureGenerator(object):
            remember to call the sub-function here
         """
         # Lexical features
-        features = []
         for feat in self.lexical_features():
-            features.append(feat)
+            yield feat
         # Status features
         for feat in self.status_features():
-            features.append(feat)
+            yield feat
         # Structural features
         for feat in self.structural_features():
-            features.append(feat)
-        return features
+            yield feat
             
 
     def lexical_features(self, n=2):
