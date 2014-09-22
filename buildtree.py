@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/14/2014 20:15:27>
+## Time-stamp: <yangfeng 09/22/2014 16:51:45>
 
 from datastructure import *
 from util import extractrelation
@@ -39,7 +39,7 @@ def BFTbin(tree):
     return bft_nodelist
 
 
-def postorder_DFT(tree, nodelist=[]):
+def postorder_DFT(tree, nodelist):
     """ Post order traversal on binary RST tree
 
     :type tree: SpanNode instance

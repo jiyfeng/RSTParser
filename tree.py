@@ -1,7 +1,7 @@
 ## tree.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/16/2014 13:14:24>
+## Time-stamp: <yangfeng 09/22/2014 16:51:53>
 
 """ Any operation about an RST tree should be here
 1, Build general/binary RST tree from annotated file
@@ -21,7 +21,7 @@ from util import extractrelation
 
 
 class RSTTree(object):
-    def __init__(self, fname, tree=None):
+    def __init__(self, fname=None, tree=None):
         """ Initialization
 
         :type text: string
@@ -53,7 +53,7 @@ class RSTTree(object):
     def bracketing(self):
         """ Generate brackets according an Binary RST tree
         """
-        nodelist = postorder_DFT(self.tree)
+        nodelist = postorder_DFT(self.tree, [])
         nodelist.pop() # Remove the root node
         brackets = []
         for node in nodelist:
@@ -94,7 +94,12 @@ class RSTTree(object):
         for node in edunodelist:
             texts.append(node.text)
         return texts
-        
+
+
+    def gettree(self):
+        """ Get the RST tree
+        """
+        return self.tree
 
 def test():
     fname = "examples/wsj_0600.out.dis"
