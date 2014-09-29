@@ -1,7 +1,7 @@
 ## buildtree.py
 ## Author: Yangfeng Ji
 ## Date: 09-10-2014
-## Time-stamp: <yangfeng 09/22/2014 16:51:45>
+## Time-stamp: <yangfeng 09/29/2014 15:15:23>
 
 from datastructure import *
 from util import extractrelation
@@ -140,7 +140,7 @@ def buildtree(text):
     :type text: string
     :param text: RST tree read from a *.dis file
     """
-    tokens = text.strip().replace('\n','').replace('(', ' ( ').replace(')', ' ) ').split()
+    tokens = text.strip().replace('//TT_ERR','').replace('\n','').replace('(', ' ( ').replace(')', ' ) ').split()
     # print 'tokens = {}'.format(tokens)
     queue = processtext(tokens)
     # print 'queue = {}'.format(queue)
@@ -315,6 +315,10 @@ def __getrelationinfo(lnode, rnode):
     """
     if (lnode.prop=='Nucleus') and (rnode.prop=='Nucleus'):
         relation = lnode.relation
+    elif (lnode.prop=='Nucleus') and (rnode.prop=='Satellite'):
+        relation = lnode.relation
+    elif (lnode.prop=='Satellite') and (rnode.prop=='Nucleus'):
+        relation = rnode.relation
     else:
         print 'lnode.prop = {}, lnode.eduspan = {}'.format(lnode.prop, lnode.eduspan)
         print 'rnode.prop = {}, lnode.eduspan = {}'.format(rnode.prop, rnode.eduspan)
@@ -381,7 +385,7 @@ def test():
     # Build RST tree
     T = buildtree(text)
     bft_nodelist = BFT(T)
-    print len(bft_nodelist)
+    # print len(bft_nodelist)
     # Binarize the RST tree
     T = binarizetree(T)
     # Back-propagating information from

@@ -1,7 +1,7 @@
 ## tree.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/22/2014 16:51:53>
+## Time-stamp: <yangfeng 09/29/2014 15:15:58>
 
 """ Any operation about an RST tree should be here
 1, Build general/binary RST tree from annotated file
@@ -102,14 +102,14 @@ class RSTTree(object):
         return self.tree
 
 def test():
-    fname = "examples/wsj_0600.out.dis"
+    fname = "examples/wsj_2367.out.dis"
     rst = RSTTree(fname)
     rst.build()
     actionlist, samplelist = rst.generate_samples()
     # print actionlist
     # print samplelist
     for (action, sample) in zip(actionlist, samplelist):
-        print action, sample
+        print action
     # print rst.bracketing()
 
 
