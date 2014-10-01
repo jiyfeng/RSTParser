@@ -1,7 +1,7 @@
 ## evaluation.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/22/2014 17:26:00>
+## Time-stamp: <yangfeng 10/01/2014 15:51:44>
 
 """ RST parsing evaluation. 
 """
@@ -52,7 +52,7 @@ class Metrics(object):
         """
         goldspan = [item[:idx] for item in goldbrackets]
         predspan = [item[:idx] for item in predbrackets]
-        allspan = list(set(goldspan + predspan))
+        allspan = [span for span in goldspan if span in predspan]
         p, r = 0.0, 0.0
         for span in allspan:
             if span in goldspan:

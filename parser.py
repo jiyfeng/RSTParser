@@ -1,7 +1,7 @@
 ## parser.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/16/2014 13:17:49>
+## Time-stamp: <yangfeng 10/01/2014 14:56:27>
 
 """ Shift-reduce parser, including following functions
 1, Initialize parsing status given a sequence of texts
@@ -22,7 +22,7 @@ class SRParser:
         don't want it works in that way with a purpose.
         - YJ
     """
-    def __init__(self, stack=[], queue=[]):
+    def __init__(self, stack, queue):
         """ Initialization
         """
         self.Stack = stack
