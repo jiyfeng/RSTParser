@@ -57,4 +57,4 @@ Start from "main.py" for a demo
 
 ## Reference ##
 
-- Yangfeng Ji, Jacob Eisenstein, **[Representation Learning for Text-level Discourse Parsing](http://www.cc.gatech.edu/grads/y/yji37/papers/ji-acl-2014.pdf)**, Proceedings of ACL, 2014
+- Yangfeng Ji, Jacob Eisenstein, **[Representation Learning for Text-level Discourse Parsing](https://github.com/jiyfeng/jiyfeng.github.io/blob/master/papers/ji-acl-2014.pdf)**, Proceedings of ACL, 2014
