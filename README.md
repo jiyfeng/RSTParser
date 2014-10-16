@@ -4,6 +4,10 @@
 
 RST parser for document-level discourse parsing. The parsing algorithm is shift-reduce parsing, and the parsing model is a offline trained multi-class classifier.
 
+To obtain a good performance, you can:
+- add more features into the feature generator (in [feature.py](feature.py))
+- tune the parameters in parsing model (in [model.py](model.py)). For now, I simply use [LinearSVC](http://scikit-learn.org/stable/modules/generated/sklearn.svm.LinearSVC.html) with default parameter setting.
+
 ## Demo ##
 
 Start from "main.py" for a demo
