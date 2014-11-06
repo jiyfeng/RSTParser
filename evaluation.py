@@ -1,7 +1,7 @@
 ## evaluation.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 10/01/2014 15:51:44>
+## Time-stamp: <yangfeng 11/05/2014 19:59:20>
 
 """ RST parsing evaluation. 
 """
@@ -80,14 +80,14 @@ class Metrics(object):
                 p = numpy.array(self.span_perf.percision).mean()
                 r = numpy.array(self.span_perf.recall).mean()
                 f1 = (2 * p * r) / (p + r)
-                print 'F1 score on span level is {}'.format(f1)
+                print 'F1 score on span level is {0:0.3f}'.format(f1)
             elif 'nuclearity' == level:
                 p = numpy.array(self.nuc_perf.percision).mean()
                 r = numpy.array(self.nuc_perf.recall).mean()
                 f1 = (2 * p * r) / (p + r)
-                print 'F1 score on nuclearity level is {}'.format(f1)
+                print 'F1 score on nuclearity level is {0:0.3f}'.format(f1)
             elif 'relation' == level:
                 p = numpy.array(self.rela_perf.percision).mean()
                 r = numpy.array(self.rela_perf.recall).mean()
                 f1 = (2 * p * r) / (p + r)
-                print 'F1 score on relation level is {}'.format(f1)
+                print 'F1 score on relation level is {0:0.3f}'.format(f1)
