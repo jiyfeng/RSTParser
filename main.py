@@ -1,7 +1,7 @@
 ## main.py
 ## Author: Yangfeng Ji
 ## Date: 09-13-2014
-## Time-stamp: <yangfeng 11/05/2014 20:08:16>
+## Time-stamp: <yangfeng 11/06/2014 10:06:38>
 
 from data import Data
 from model import ParsingModel
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     trainmodel()
     # Evaluate on dev/test documents
     print 'Evaluating the parsing performance ...'
-    evalparser(path='./examples')
+    evalparser(path='./examples', report=True)
     
 
     

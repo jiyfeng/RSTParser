@@ -1,24 +1,18 @@
 ## feature.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 09/22/2014 16:27:11>
+## Time-stamp: <yangfeng 11/06/2014 10:15:07>
 
 
 class FeatureGenerator(object):
     def __init__(self, stack, queue, doclen=None):
         """ Initialization of feature generator
 
-        Currently, we only consider the feature generated
-        from the top 2 spans from the stack, and the first
-        span from the queue. However, you are available to
-        use any other information for feature generation.
-        - YJ
-        
         :type stack: list
-        :param stack: list of Node instance
+        :param stack: list of SpanNode instance
 
         :type queue: list
-        :param queue: list of Node instance
+        :param queue: list of SpanNode instance
 
         :type doclen: int
         :param doclen: document length wrt EDUs
