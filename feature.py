@@ -1,7 +1,7 @@
 ## feature.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 11/06/2014 10:15:07>
+## Time-stamp: <yangfeng 11/06/2014 14:21:36>
 
 
 class FeatureGenerator(object):
@@ -19,16 +19,18 @@ class FeatureGenerator(object):
         """
         # Stack
         if len(stack) >= 2:
-            self.span1, self.span2 = stack[-1], stack[-2]
+            self.stackspan1 = stack[-1] # Top-1st on stack
+            self.stackspan2 = stack[-2] # Top-2rd on stack
         elif len(stack) == 1:
-            self.span1, self.span2 = stack[-1], None
+            self.stackspan1 = stack[-1]
+            self.stackspan2 = None
         else:
-            self.span1, self.span2 = None, None
+            self.stackspan1, self.stackspan2 = None, None
         # Queue
         if len(queue) > 0:
-            self.span3 = queue[0]
+            self.queuespan1 = queue[0] # First in queue
         else:
-            self.span3 = None
+            self.queuespan1 = None
         # Document length
         self.doclen = doclen
 
@@ -42,52 +44,37 @@ class FeatureGenerator(object):
            remember to call the sub-function here
         """
         features = []
-        # Lexical features
-        for feat in self.lexical_features():
-            features.append(feat)
         # Status features
         for feat in self.status_features():
             features.append(feat)
         # Structural features
         for feat in self.structural_features():
             features.append(feat)
+            # Lexical features
+        for feat in self.lexical_features():
+            features.append(feat)
         return features
-            
-            
-
-    def lexical_features(self, n=2):
-        """ Lexical features
-
-        I am not sure how much sense it will make when
-        n > 2. Maybe I didn't realize it - YJ
-
-        :type n: int
-        :param n: n tokens at the beginning/end of Spans
-        """
-        features = []
-        for feat in features:
-            yield feat
-            
+    
 
     def structural_features(self):
         """ Structural features
         """
         features = []
-        if self.span1 is not None:
+        if self.stackspan1 is not None:
             # Span Length wrt EDUs
-            features.append(('Span1','Length-EDU',self.span1.eduspan[1]-self.span1.eduspan[0]+1))
+            features.append(('StackSpan1','Length-EDU',self.stackspan1.eduspan[1]-self.stackspan1.eduspan[0]+1))
             # Distance to the beginning of the document wrt EDUs
-            features.append(('Span1','Distance-To-Begin',self.span1.eduspan[0]))
+            features.append(('StackSpan1','Distance-To-Begin',self.stackspan1.eduspan[0]))
             # Distance to the end of the document wrt EDUs
             if self.doclen is not None:
-                features.append(('Span1','Distance-To-End',self.doclen-self.span1.eduspan[1]))
-        if self.span2 is not None:
-            features.append(('Span2','Length-EDU',self.span2.eduspan[1]-self.span2.eduspan[0]+1))
-            features.append(('Span2','Distance-To-Begin',self.span2.eduspan[0]))
+                features.append(('StackSpan1','Distance-To-End',self.doclen-self.stackspan1.eduspan[1]))
+        if self.stackspan2 is not None:
+            features.append(('StackSpan2','Length-EDU',self.stackspan2.eduspan[1]-self.stackspan2.eduspan[0]+1))
+            features.append(('StackSpan2','Distance-To-Begin',self.stackspan2.eduspan[0]))
             if self.doclen is not None:
-                features.append(('Span2','Distance-To-End',self.doclen-self.span2.eduspan[1]))
-        if self.span3 is not None:
-            features.append(('Span3','Distance-To-Begin',self.span3.eduspan[0]))
+                features.append(('StackSpan2','Distance-To-End',self.doclen-self.stackspan2.eduspan[1]))
+        if self.queuespan1 is not None:
+            features.append(('QueueSpan1','Distance-To-Begin',self.queuespan1.eduspan[0]))
         # Should include some features about the nucleus EDU
         for feat in features:
             yield feat
@@ -97,17 +84,29 @@ class FeatureGenerator(object):
         """ Features related to stack/queue status
         """
         features = []
-        if (self.span1 is None) and (self.span2 is None):
+        if (self.stackspan1 is None) and (self.stackspan2 is None):
             features.append(('Empty-Stack'))
-        elif (self.span1 is not None) and (self.span2 is None):
+        elif (self.stackspan1 is not None) and (self.stackspan2 is None):
             features.append(('One-Elem-Stack'))
-        elif (self.span1 is not None) and (self.span2 is not None):
+        elif (self.stackspan1 is not None) and (self.stackspan2 is not None):
             features.append(('More-Elem-Stack'))
         else:
             raise ValueError("Unrecognized status in stack")
-        if (self.span3 is None):
+        if self.queuespan1 is None:
             features.append(('Empty-Queue'))
         else:
             features.append(('NonEmpty-Queue'))
         for feat in features:
             yield feat
+
+
+    def lexical_features(self):
+        """ Lexical features
+        """
+        features = []
+        if self.stackspan1 is not None:
+            features.append(self.stackspan1.text.split()[0])
+        for feat in features:
+            yield feat
+            
+        

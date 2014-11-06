@@ -1,7 +1,7 @@
 ## datastructure.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2013
-## Time-stamp: <yangfeng 09/16/2014 11:16:56>
+## Time-stamp: <yangfeng 11/06/2014 10:33:23>
 
 class SpanNode(object):
     """ RST tree node
@@ -9,8 +9,9 @@ class SpanNode(object):
     def __init__(self, prop):
         """ Initialization of SpanNode
 
-        :type text: string
-        :param text: text of this span
+        :type prop: string
+        :param prop: property of this span wrt its parent node.
+                     Only two possible values: Nucleus or Satellite
         """
         # Text of this span / Discourse relation
         self.text, self.relation = None, None
