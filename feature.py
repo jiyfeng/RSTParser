@@ -1,7 +1,7 @@
 ## feature.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2014
-## Time-stamp: <yangfeng 11/06/2014 14:21:36>
+## Time-stamp: <yangfeng 11/06/2014 14:35:59>
 
 
 class FeatureGenerator(object):
@@ -104,8 +104,8 @@ class FeatureGenerator(object):
         """ Lexical features
         """
         features = []
-        if self.stackspan1 is not None:
-            features.append(self.stackspan1.text.split()[0])
+        # Add the first token from the top-1st span on stack
+
         for feat in features:
             yield feat
             

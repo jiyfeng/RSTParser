@@ -1,7 +1,7 @@
 ## datastructure.py
 ## Author: Yangfeng Ji
 ## Date: 08-29-2013
-## Time-stamp: <yangfeng 11/06/2014 10:33:23>
+## Time-stamp: <yangfeng 11/06/2014 14:40:27>
 
 class SpanNode(object):
     """ RST tree node
@@ -19,7 +19,7 @@ class SpanNode(object):
         self.eduspan, self.nucspan = None, None
         # Nucleus single EDU
         self.nucedu = None
-        # Property
+        # Property: it is a Nucleus or Satellite
         self.prop = prop
         # Children node
         # Each of them is a node instance
