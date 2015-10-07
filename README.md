@@ -1,5 +1,9 @@
 # RST Parser #
 
+**If you are looking for a RST paper which is ready to use, please check out [this repository](https://github.com/jiyfeng/DPLP)**
+
+**If you need a framework to develop your own RST parser, please keep reading :-)**
+
 ## Basic Description ##
 
 RST parser for document-level discourse parsing. The parsing algorithm is shift-reduce parsing, and the parsing model is a offline trained multi-class classifier.
